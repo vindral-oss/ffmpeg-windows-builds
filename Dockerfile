@@ -126,7 +126,7 @@ WORKDIR /ffmpeg
 RUN git checkout ${FFMPEG_VERSION}
 RUN tar -czf /ffmpeg-source-${FFMPEG_VERSION}.tar.gz -C / ffmpeg
 RUN ./configure --pkg-config=pkg-config --prefix=/ffmpeg-output --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 \
-    --enable-gpl --enable-libx264 --enable-zlib --enable-libvorbis --enable-nvenc --enable-nvdec --enable-libsrt \
+    --enable-gpl --enable-openssl --enable-version3 --enable-libx264 --enable-zlib --enable-libvorbis --enable-nvenc --enable-nvdec --enable-libsrt \
     --extra-cflags="-I/output/include" --extra-ldflags="-static -L/output/lib" \
     --pkg-config-flags="--static" --enable-shared && \
     make -j$(( $(nproc) + 1)) && \
