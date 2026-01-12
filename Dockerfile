@@ -63,7 +63,7 @@ COPY --from=openssl /output /openssl
 WORKDIR /
 RUN git clone https://github.com/Haivision/srt.git
 WORKDIR /srt
-RUN git checkout v1.5.4
+RUN git checkout v1.5.5-rc.0
 RUN mkdir _build && cd _build && \
     OPENSSL_ROOT_DIR=/openssl cmake ../ -DCMAKE_CXX_FLAGS="-static-libgcc "  -DUSE_STATIC_LIBSTDCXX=1 -DENABLE_SHARED=0 -DENABLE_CXX11=0 -DENABLE_APPS=0 -DENABLE_STATIC=1 -DBUILD_SHARED_LIBS=1 -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_INSTALL_PREFIX=/output && \
     cmake --build . && make install
