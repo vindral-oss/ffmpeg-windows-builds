@@ -37,7 +37,6 @@ jobs:
             FFMPEG_VERSION=${{ matrix.ffmpeg-version }}
 
       - name: Copy output
-        if: github.ref == 'refs/heads/main'
         shell: 'script -q -e -c "bash {0}"'
         run: |
           docker run --name ffmpeg ghcr.io/vindral-oss/ffmpeg-windows-builds:${{ matrix.ffmpeg-version }}-${{ github.sha }}
@@ -45,12 +44,11 @@ jobs:
           docker cp ffmpeg:/ffmpeg-source-${{ matrix.ffmpeg-version }}.tar.gz ffmpeg-source-${{ matrix.ffmpeg-version }}.tar.gz
 
       - name: Create Release
-        if: github.ref == 'refs/heads/main'
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ matrix.ffmpeg-version }}-${{ github.sha }}
-          draft: false
+          draft: ${{ github.ref != 'refs/heads/main' }}
           files: |
             ffmpeg-${{ matrix.ffmpeg-version }}.7z
             ffmpeg-source-${{ matrix.ffmpeg-version }}.tar.gz
