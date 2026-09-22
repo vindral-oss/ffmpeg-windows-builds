@@ -90,6 +90,16 @@ RUN ./configure CFLAGS="-I/usr/local/include" LDFLAGS="-static -L/usr/local/lib"
  --host=x86_64-w64-mingw32 --disable-shared --enable-static --prefix=/output --disable-docs --disable-examples --disable-oggtest && \
      make -j$(( $(nproc) + 1)) && make install
 
+FROM base AS libopus
+
+WORKDIR /
+RUN git clone https://github.com/xiph/opus.git
+WORKDIR /opus
+RUN git checkout v1.5.2
+RUN ./autogen.sh
+RUN ./configure --host=x86_64-w64-mingw32 --disable-shared --enable-static --prefix=/output --disable-doc --disable-extra-programs && \
+     make -j$(( $(nproc) + 1)) && make install
+
 FROM base AS nvheaders
 
 WORKDIR /
@@ -114,6 +124,7 @@ COPY --from=libx264 /output /output
 COPY --from=openssl /output /output
 COPY --from=libsrt /output /output
 COPY --from=libvorbis /output /output
+COPY --from=libopus /output /output
 COPY --from=libogg /output /output
 COPY --from=nvheaders /output /output
 COPY --from=zlib /output /output
@@ -126,7 +137,7 @@ WORKDIR /ffmpeg
 RUN git checkout ${FFMPEG_VERSION}
 RUN tar -czf /ffmpeg-source-${FFMPEG_VERSION}.tar.gz -C / ffmpeg
 RUN ./configure --pkg-config=pkg-config --prefix=/ffmpeg-output --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 \
-    --enable-gpl --enable-openssl --enable-version3 --enable-libx264 --enable-zlib --enable-libvorbis --enable-nvenc --enable-nvdec --enable-libsrt \
+    --enable-gpl --enable-openssl --enable-version3 --enable-libx264 --enable-zlib --enable-libvorbis --enable-libopus --enable-nvenc --enable-nvdec --enable-libsrt \
     --extra-cflags="-I/output/include" --extra-ldflags="-static -L/output/lib" \
     --pkg-config-flags="--static" --enable-shared && \
     make -j$(( $(nproc) + 1)) && \
