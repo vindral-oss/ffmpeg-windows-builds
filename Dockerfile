@@ -102,10 +102,12 @@ RUN ./configure --host=x86_64-w64-mingw32 --disable-shared --enable-static --pre
 
 FROM base AS nvheaders
 
+ARG NV_CODEC_HEADERS_VERSION=12.1.14.0
+
 WORKDIR /
-RUN wget https://github.com/FFmpeg/nv-codec-headers/releases/download/n12.1.14.0/nv-codec-headers-12.1.14.0.tar.gz
-RUN tar -xvf nv-codec-headers-12.1.14.0.tar.gz
-WORKDIR /nv-codec-headers-12.1.14.0
+RUN wget https://github.com/FFmpeg/nv-codec-headers/releases/download/n${NV_CODEC_HEADERS_VERSION}/nv-codec-headers-${NV_CODEC_HEADERS_VERSION}.tar.gz
+RUN tar -xvf nv-codec-headers-${NV_CODEC_HEADERS_VERSION}.tar.gz
+WORKDIR /nv-codec-headers-${NV_CODEC_HEADERS_VERSION}
 RUN make -j$(( $(nproc) + 1)) && make install PREFIX=/output
 
 FROM base AS zlib

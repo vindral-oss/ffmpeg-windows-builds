@@ -12,6 +12,14 @@ jobs:
       fail-fast: true
       matrix:
         ffmpeg-version: ["n6.1.4", "n7.1", "n8.1.3"]
+        include:
+          - ffmpeg-version: "n6.1.4"
+            nv-codec-headers: "12.1.14.0"
+          - ffmpeg-version: "n7.1"
+            nv-codec-headers: "12.1.14.0"
+          # Video Codec SDK 13.0: needs NVIDIA driver 570 or newer.
+          - ffmpeg-version: "n8.1.3"
+            nv-codec-headers: "13.0.19.1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +43,7 @@ jobs:
           tags: ghcr.io/vindral-oss/ffmpeg-windows-builds:${{ matrix.ffmpeg-version }}-${{ github.sha }}
           build-args: |
             FFMPEG_VERSION=${{ matrix.ffmpeg-version }}
+            NV_CODEC_HEADERS_VERSION=${{ matrix.nv-codec-headers }}
 
       - name: Copy output
         shell: 'script -q -e -c "bash {0}"'
